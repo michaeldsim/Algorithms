@@ -7,13 +7,13 @@ import java.util.ArrayList;
 
 public class GraphNode extends Rectangle {
 	final GraphManager manager;
-	GraphNode parent;
+	GraphNode parent = null;
 	static final int WIDTH = 40;
 	static final int HEIGHT = 40;
 	boolean emptyPath = true;
 	boolean start = false;
 	boolean end = false;
-	int g, h, f;
+	private int g, h, f;
 
 	public GraphNode(int x, int y, GraphManager manager) {
 		this.manager = manager;
@@ -24,8 +24,18 @@ public class GraphNode extends Rectangle {
 		this.setFill(Color.WHITE);
 		this.setStroke(Color.BLACK);
 
+		this.setOnMouseDragEntered(event -> {
+			System.out.println(toString());
+			if (!emptyPath && (!start || !end)) {
+				setEmptyPath(true);
+			} else if (start || end) {
+
+			} else {
+				setEmptyPath(false);
+			}
+		});
+
 		this.setOnMouseClicked(event -> {
-			System.out.printf("Start: %b End: %b Empty: %b\n", start, end, emptyPath);
 			if (event.isShiftDown()) {
 					if (manager.startExists && start) {
 						start = false;
@@ -63,22 +73,19 @@ public class GraphNode extends Rectangle {
 			}
 		});
 	}
-	
-	//TODO: math for costs
+
 	public void findCosts() {
 		// 10 is the cost for 1 space
-		int startX = (int) manager.start.getX()/GraphNode.WIDTH;
-		int startY = (int) manager.start.getY()/GraphNode.HEIGHT;
-
 
 		// G cost is equal to the distance from the start node to n
-		int g = 0;
-		
-		// H cost is equal to the distance from n to the end node
-		int h = 0;
+		if(this.equals(start)) {
+			this.g = 0;
+		} else {
+			this.g = this.parent.getG() + 10;
+		}
 
-		this.g = g;
-		this.h = h;
+		// H cost is equal to the distance from n to the end node
+		this.h = distanceTo(manager.end);
 
 		// F cost is the two costs combined
 		this.f = g+h;
@@ -97,14 +104,6 @@ public class GraphNode extends Rectangle {
 
 	public GraphNode getSelf() {
 		return this;
-	}
-
-	public boolean compare(GraphNode n) {
-		if (this.getX() == n.getX() && this.getY() == n.getY()) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	public ArrayList<GraphNode> getNeighbors() {
@@ -138,5 +137,22 @@ public class GraphNode extends Rectangle {
 		return neighbors;
 	}
 
+	public int distanceTo(GraphNode node) {
+		int xDiff = (int) Math.abs(node.getX()/40 - getX()/40);
+		int yDiff = (int) Math.abs(node.getY()/40 - getY()/40);
+		return xDiff + yDiff;
+	}
+
+	public void setParent(GraphNode parent) {
+		this.parent = parent;
+	}
+
+	public int getF() {
+		return f;
+	}
+
+	public int getG() {
+		return g;
+	}
 
 }

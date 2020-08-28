@@ -37,7 +37,6 @@ public class GraphManager {
     }
 
     public GraphNode get(int x, int y) {
-        System.out.println("[x,y] = [" + x/40 + ", " + y/40 + "], list size: " + grid.length);
         return grid[x/GraphNode.WIDTH][y/GraphNode.HEIGHT];
     }
 

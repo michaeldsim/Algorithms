@@ -8,10 +8,6 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-
 public class Main extends Application {
     final int WIDTH = 950;
     final int HEIGHT = 740;
@@ -36,11 +32,21 @@ public class Main extends Application {
                                 root.getChildren().removeAll(gm.getAsList());
                                 gm.generateNewGraph();
                                 root.getChildren().addAll(gm.getAsList());
+
                                 break;
                             case S:
-                                if (gm.startExists) {
-                                    for (GraphNode node : gm.start.getNeighbors()) {
-                                        node.setFill(Color.FORESTGREEN);
+                                if (gm.startExists && gm.endExists) {
+                                    APathfinding algo = new APathfinding(gm.start, gm.end);
+                                    try {
+                                        for(GraphNode n : algo.calc()) {
+                                            if(n.equals(gm.start) || n.equals(gm.end)) {
+
+                                            } else {
+                                                n.setFill(Color.TEAL);
+                                            }
+                                        }
+                                    } catch (InterruptedException interruptedException) {
+                                        interruptedException.printStackTrace();
                                     }
                                 }
                                 break;
